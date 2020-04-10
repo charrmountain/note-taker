@@ -62,19 +62,19 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-app.delete("/api/notes", (req, res) => {
-  let noteDelete = req.body;
-  noteDelete.id = notesIndex;
-  
+app.delete("/api/notes/:id", (req, res) => {
+  fs.readFile("./db/db.json", "utf-8", (err, data) => {
+    if (err) throw err;
 
-  if (notesIndex === notes.id) {
-    notes.splice(notes.id, 1);
-    // let client know that the character was deleted successfully
-    res.sendStatus(200);
-  } else {
-    // let client know that the character wasn't found
-    res.sendStatus(404);
-  }
+    const requestId = req.params.id;
+    console.log(requestId);
+
+    if (requestId === notes["id"]) {
+      notes.splice(requestId, 1);
+      // let client know that the character was deleted successfully
+      res.sendStatus(200);
+    }
+  });
 });
 
 // Starts the server to begin listening
