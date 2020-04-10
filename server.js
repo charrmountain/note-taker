@@ -11,58 +11,69 @@ const PORT = process.env.PORT || 3000;
 // body property on the response object passed to our route handlers.
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 //empty for user
 const notes = []
 
+
+app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, '/public/assets')));
+app.use(express.static(path.join(__dirname, '/public/assets/js')));
+app.use(express.static(path.join(__dirname, '/public/assets/css')));
+
 // Routes
 app.get("/notes", (req, res) => {
-  res.sendFile(path.join(__dirname, "notes.html"));
+  res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
 //data for current 5 tables
 app.get("/api/notes", (req, res) => {
-  fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-    if (err) throw err
+  res.sendFile(path.join(__dirname, "./db/db.json"));
+  // fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+  //   if (err) throw err
 
-    jsonData = JSON.parse(data)
-    console.log(jsonData)
-    res.json(jsonData);
-  })
-  });
+  //   jsonData = JSON.parse(data)
 
- 
+  //   res.json(data);
+  // })
+});
+
+
+let lastId = 2;
+
 // Create New reservations - takes in JSON input
 app.post("/api/notes", (req, res) => {
     // req.body hosts is equal to the JSON post sent from the user
     // This works because of our body parsing middleware
     
     const newNote = req.body;
-    
+
+    lastId += 1;
+    newNote["id"] = lastId;
+
     console.log(newNote);
-    
-    res.json(newNote);
     
     notes.push(newNote);
     
     fs.writeFileSync('./db/db.json', JSON.stringify(notes), 'utf8', function (err) {
       if (err) throw err;
-      console.log('Note Added!');
     });
 
-   return newNote;
-   
+   fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+    if (err) throw err
+
+    res.json(data)
+  })
+  
   });
 
-
 app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+    res.sendFile(path.join(__dirname, "/public/index.html"));
 });
+
+
 // Starts the server to begin listening
 app.listen(PORT, () => {
   console.log("App listening on PORT " + PORT);
 });
-// create another route for reservation
-// view tables & home page
-// posts for clear tables
-// posts for making reservations
-//
+
