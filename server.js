@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //empty for user
-const notes = [];
+let notes = [];
 
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(express.static(path.join(__dirname, "/public/assets")));
@@ -63,18 +63,21 @@ app.get("*", (req, res) => {
 });
 
 app.delete("/api/notes/:id", (req, res) => {
-  fs.readFile("./db/db.json", "utf-8", (err, data) => {
-    if (err) throw err;
 
-    const requestId = req.params.id;
-    console.log(requestId);
 
-    if (requestId === notes["id"]) {
-      notes.splice(requestId, 1);
-      // let client know that the character was deleted successfully
-      res.sendStatus(200);
-    }
-  });
+    const requestId = Number(req.params.id);
+
+    notes = notes.filter((note) => {
+      return note.id !== requestId;
+    });
+
+    fs.writeFileSync("./db/db.json", JSON.stringify(notes), "utf8", function (
+      err
+    ) {
+      if (err) throw err;
+    });
+
+    res.sendStatus(200);
 });
 
 // Starts the server to begin listening
