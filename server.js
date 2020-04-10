@@ -64,7 +64,6 @@ app.get("*", (req, res) => {
 
 app.delete("/api/notes/:id", (req, res) => {
 
-
     const requestId = Number(req.params.id);
 
     notes = notes.filter((note) => {
