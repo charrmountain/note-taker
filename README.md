@@ -33,7 +33,8 @@
 
 ## **Visuals**
 ![alt](/public/assets/noteDemo.gif)
-       - Example of the Note Taker application
+
+- Example of the Note Taker application
 
 ## **Usage**
 - A fully stacked note taker application.
