@@ -1,8 +1,7 @@
 const path = require("path");
 const express = require("express");
-const fs = require("fs")
+const fs = require("fs");
 const app = express();
-
 
 const PORT = process.env.PORT || 3000;
 
@@ -13,13 +12,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //empty for user
-const notes = []
+const notes = [];
 
-
-app.use(express.static(path.join(__dirname, '/public')));
-app.use(express.static(path.join(__dirname, '/public/assets')));
-app.use(express.static(path.join(__dirname, '/public/assets/js')));
-app.use(express.static(path.join(__dirname, '/public/assets/css')));
+app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "/public/assets")));
+app.use(express.static(path.join(__dirname, "/public/assets/js")));
+app.use(express.static(path.join(__dirname, "/public/assets/css")));
 
 // Routes
 app.get("/notes", (req, res) => {
@@ -29,51 +27,57 @@ app.get("/notes", (req, res) => {
 //data for current 5 tables
 app.get("/api/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "./db/db.json"));
-  // fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-  //   if (err) throw err
-
-  //   jsonData = JSON.parse(data)
-
-  //   res.json(data);
-  // })
 });
-
 
 let lastId = 2;
 
 // Create New reservations - takes in JSON input
 app.post("/api/notes", (req, res) => {
-    // req.body hosts is equal to the JSON post sent from the user
-    // This works because of our body parsing middleware
-    
-    const newNote = req.body;
+  // req.body hosts is equal to the JSON post sent from the user
+  // This works because of our body parsing middleware
 
-    lastId += 1;
-    newNote["id"] = lastId;
+  const newNote = req.body;
 
-    console.log(newNote);
-    
-    notes.push(newNote);
-    
-    fs.writeFileSync('./db/db.json', JSON.stringify(notes), 'utf8', function (err) {
-      if (err) throw err;
-    });
+  lastId += 1;
+  newNote["id"] = lastId;
 
-   fs.readFile('./db/db.json', 'utf-8', (err, data) => {
-    if (err) throw err
+  console.log(newNote);
 
-    res.json(data)
-  })
-  
+  notes.push(newNote);
+
+  fs.writeFileSync("./db/db.json", JSON.stringify(notes), "utf8", function (
+    err
+  ) {
+    if (err) throw err;
   });
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "/public/index.html"));
+  fs.readFile("./db/db.json", "utf-8", (err, data) => {
+    if (err) throw err;
+
+    res.json(data);
+  });
 });
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
+
+app.delete("/api/notes", (req, res) => {
+  let noteDelete = req.body;
+  noteDelete.id = notesIndex;
+  
+
+  if (notesIndex === notes.id) {
+    notes.splice(notes.id, 1);
+    // let client know that the character was deleted successfully
+    res.sendStatus(200);
+  } else {
+    // let client know that the character wasn't found
+    res.sendStatus(404);
+  }
+});
 
 // Starts the server to begin listening
 app.listen(PORT, () => {
   console.log("App listening on PORT " + PORT);
 });
-
